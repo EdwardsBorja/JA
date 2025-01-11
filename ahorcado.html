@@ -7,10 +7,12 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .hangman-drawing {
-            font-size: 2rem;
+            font-family: monospace;
+            font-size: 1.5rem;
             margin: 20px 0;
             min-height: 150px;
             text-align: center;
+            white-space: pre-line;
         }
         .word-display {
             font-size: 1.5rem;
@@ -48,9 +50,9 @@
     <script>
         const categories = {
             "Personajes": ["Moisés", "Josué", "David", "Elías", "Pedro", "Pablo", "María", "Noé", "Daniel", "Estéban", "Sara", "Isaac", "Raquel", "Jacob", "Abraham", "Jonás", "Goliat", "Salomón", "Sansón", "Ruth"],
-            "Lugares": ["Belén", "Jerusalén", "Nazaret", "Eégipto", "Judea", "Galilea", "Canaán", "Babilonia", "Corinto", "Roma", "Emaús", "Sinai", "Jericó", "Ur", "Samaria", "Antioquía", "Sodoma", "Gomorra", "N�nive", "Betel"],
+            "Lugares": ["Belén", "Jerusalén", "Nazaret", "Egipto", "Judea", "Galilea", "Canaán", "Babilonia", "Corinto", "Roma", "Emaús", "Sinai", "Jericó", "Ur", "Samaria", "Antioquía", "Sodoma", "Gomorra", "Nínive", "Betel"],
             "Versículos": ["Juan 3:16", "Salmos 23:1", "Génesis 1:1", "Mateo 28:19", "Hechos 1:8", "Filipenses 4:13", "Romanos 8:28", "Isaías 40:31", "Proverbios 3:5", "Josué 1:9", "1 Corintios 13:4", "Salmos 100:1", "Mateo 6:33", "Jeremías 29:11", "Hebreos 11:1", "Efesios 2:8", "2 Corintios 5:7", "Juan 1:1", "Apocalipsis 3:20", "Marcos 12:30"],
-            "Himnos Adventistas": ["Santo Santo Santo", "Gloria a Dios", "Bajo sus alas", "Oh ven ven Emmanuel", "Cuan Grande es El", "Roca de la Eternidad", "Conságrate ya", "Día feliz", "Dulce Comunión", "Vive con Cristo", "Cerca de Ti", "Venid Fieles Todos", "Castillo Fuerte", "Al Mundo Paz", "Himno de Victoria", "Jesús es mi Rey", "Dígnos es el Cordero", "Día de Reposo", "Maravilloso Amor", "Pronto Viene Cristo"],
+            "Himnos Adventistas": ["Santo Santo Santo", "Gloria a Dios", "Bajo sus alas", "Oh ven ven Emmanuel", "Cuan Grande es El", "Roca de la Eternidad", "Conságrate ya", "Día feliz", "Dulce Comunión", "Vive con Cristo", "Cerca de Ti", "Venid Fieles Todos", "Castillo Fuerte", "Al Mundo Paz", "Himno de Victoria", "Jesús es mi Rey", "Dígnos es el Cordero", "Día de Reposo", "Maravilloso Amor", "Pronto Viene Cristo"]
         };
 
         let selectedCategory = "";
@@ -119,9 +121,14 @@
 
         function updateHangmanDrawing() {
             const stages = [
-                "Cabeza", "Brazo izquierdo", "Brazo derecho", "Cuerpo", "Pierna izquierda", "Pierna derecha"
+                " O",
+                " O\n/",
+                " O\n/|",
+                " O\n/|\\",
+                " O\n/|\\\n/",
+                " O\n/|\\\n/ \\",
             ];
-            document.getElementById("hangmanDrawing").innerText += stages[errors - 1] + "\n";
+            document.getElementById("hangmanDrawing").innerText = stages[errors - 1] || "";
         }
 
         function revealAnswer() {
