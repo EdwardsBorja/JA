@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego del Ahorcado</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .hangman-drawing {
+            font-size: 2rem;
+            margin: 20px 0;
+            min-height: 150px;
+            text-align: center;
+        }
+        .word-display {
+            font-size: 1.5rem;
+            letter-spacing: 1rem;
+            margin-bottom: 20px;
+        }
+        .letters {
+            font-size: 1.2rem;
+            display: inline-block;
+            margin: 0 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container text-center mt-5">
+        <h1>Juego del Ahorcado</h1>
+        <button class="btn btn-primary" id="selectCategory">Elegir Categoría</button>
+        <div id="gameArea" class="mt-4 d-none">
+            <div class="hangman-drawing" id="hangmanDrawing">Inicia el juego para comenzar...</div>
+            <div id="wordDisplay" class="word-display"></div>
+            <input type="text" id="inputLetter" class="form-control w-50 mx-auto" maxlength="1">
+            <button class="btn btn-success mt-2" id="checkLetter">Comprobar</button>
+            <button class="btn btn-warning mt-2" id="revealAnswer">Revelar Respuesta</button>
+            <button class="btn btn-info mt-2" id="chooseAnotherCategory">Elegir Otra Categoría</button>
+            <div id="questionNumbers" class="mt-3"></div>
+        </div>
+    </div>
+
+    <script>
+        const categories = {
+            "Personajes": ["Moisés", "Josué", "David", "Elías", "Pedro", "Pablo", "María", "Noé", "Daniel", "Estéban", "Sara", "Isaac", "Raquel", "Jacob", "Abraham", "Jonás", "Goliat", "Salomón", "Sansón", "Ruth"],
+            "Lugares": ["Belén", "Jerusalén", "Nazaret", "Eégipto", "Judea", "Galilea", "Canaán", "Babilonia", "Corinto", "Roma", "Emaús", "Sinai", "Jericó", "Ur", "Samaria", "Antioquía", "Sodoma", "Gomorra", "N�nive", "Betel"],
+            "Versículos": ["Juan 3:16", "Salmos 23:1", "Génesis 1:1", "Mateo 28:19", "Hechos 1:8", "Filipenses 4:13", "Romanos 8:28", "Isaías 40:31", "Proverbios 3:5", "Josué 1:9", "1 Corintios 13:4", "Salmos 100:1", "Mateo 6:33", "Jeremías 29:11", "Hebreos 11:1", "Efesios 2:8", "2 Corintios 5:7", "Juan 1:1", "Apocalipsis 3:20", "Marcos 12:30"],
+            "Himnos Adventistas": ["Santo Santo Santo", "Gloria a Dios", "Bajo sus alas", "Oh ven ven Emmanuel", "Cuan Grande es El", "Roca de la Eternidad", "Conságrate ya", "Día feliz", "Dulce Comunión", "Vive con Cristo", "Cerca de Ti", "Venid Fieles Todos", "Castillo Fuerte", "Al Mundo Paz", "Himno de Victoria", "Jesús es mi Rey", "Dígnos es el Cordero", "Día de Reposo", "Maravilloso Amor", "Pronto Viene Cristo"],
+        };
+
+        let selectedCategory = "";
+        let word = "";
+        let guessedLetters = new Set();
+        let errors = 0;
+
+        document.getElementById("selectCategory").addEventListener("click", showCategorySelection);
+        document.getElementById("checkLetter").addEventListener("click", checkLetter);
+        document.getElementById("revealAnswer").addEventListener("click", revealAnswer);
+        document.getElementById("chooseAnotherCategory").addEventListener("click", resetGame);
+
+        function showCategorySelection() {
+            const category = prompt("Elige una categoría: Personajes, Lugares, Versículos, Himnos Adventistas");
+            if (categories[category]) {
+                selectedCategory = category;
+                startGame();
+            } else {
+                alert("Categoría no válida. Inténtalo nuevamente.");
+            }
+        }
+
+        function startGame() {
+            word = categories[selectedCategory][Math.floor(Math.random() * categories[selectedCategory].length)].toUpperCase();
+            guessedLetters.clear();
+            errors = 0;
+            document.getElementById("hangmanDrawing").innerText = "";
+            document.getElementById("wordDisplay").innerHTML = word.replace(/./g, "_ ");
+            document.getElementById("gameArea").classList.remove("d-none");
+            document.getElementById("questionNumbers").innerHTML = generateQuestionNumbers();
+        }
+
+        function generateQuestionNumbers() {
+            let numbersHtml = "";
+            for (let i = 1; i <= 20; i++) {
+                numbersHtml += `<button class='btn btn-outline-secondary mx-1'>${i}</button>`;
+            }
+            return numbersHtml;
+        }
+
+        function checkLetter() {
+            const input = document.getElementById("inputLetter").value.toUpperCase();
+            document.getElementById("inputLetter").value = "";
+
+            if (!input) return;
+            if (guessedLetters.has(input)) {
+                alert("Ya ingresaste esa letra o palabra.");
+                return;
+            }
+
+            guessedLetters.add(input);
+            if (word.includes(input)) {
+                let displayWord = "";
+                for (const letter of word) {
+                    displayWord += guessedLetters.has(letter) ? letter + " " : "_ ";
+                }
+                document.getElementById("wordDisplay").innerHTML = displayWord;
+
+                if (!displayWord.includes("_")) {
+                    alert("¡Felicidades! Has adivinado la palabra.");
+                }
+            } else {
+                errors++;
+                updateHangmanDrawing();
+
+                if (errors === 6) {
+                    alert(`Has perdido. La palabra era: ${word}`);
+                }
+            }
+        }
+
+        function updateHangmanDrawing() {
+            const stages = [
+                "Cabeza", "Brazo izquierdo", "Brazo derecho", "Cuerpo", "Pierna izquierda", "Pierna derecha"
+            ];
+            document.getElementById("hangmanDrawing").innerText += stages[errors - 1] + "\n";
+        }
+
+        function revealAnswer() {
+            alert(`La respuesta es: ${word}`);
+        }
+
+        function resetGame() {
+            document.getElementById("gameArea").classList.add("d-none");
+            document.getElementById("hangmanDrawing").innerText = "";
+            document.getElementById("wordDisplay").innerHTML = "";
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
