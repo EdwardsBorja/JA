@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejercicio Biblico</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        .navbar {
+            background-color: white;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 2px -2px gray;
+        }
+
+        .navbar a {
+            color: black;
+            text-decoration: none;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+        }
+
+        .menu-icon {
+            font-size: 24px;
+        }
+
+
+        h1 {
+            background-color: #6b8e23;
+            color: white;
+            padding: 20px;
+            margin: 0;
+        }
+
+        #board {
+            margin: 20px auto;
+            padding: 20px;
+            border: 5px solid #444;
+            width: 80%;
+            background-color: #ffde59;
+        }
+
+        .question {
+            font-size: 1.5rem;
+            margin: 20px 0;
+            color: #333;
+        }
+
+        .answer-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            margin: 5px;
+            background-color: #f7f7f7;
+            border: 2px solid #ccc;
+        }
+
+        .hidden {
+            background-color: #444;
+            color: #444;
+        }
+
+        #inputArea {
+            margin: 20px 0;
+        }
+
+        #inputArea input {
+            padding: 10px;
+            font-size: 1rem;
+        }
+
+        .btn-custom {
+            padding: 10px 20px;
+            font-size: 1rem;
+            margin: 5px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        #scoreBoard {
+            margin-top: 20px;
+            font-size: 1.5rem;
+        }
+
+        .strikes {
+            color: red;
+            font-size: 2rem;
+            margin: 10px 0;
+        }
+        footer {
+        background-color: #343a40;
+        color: white;
+        padding: 20px 0;
+        text-align: center;
+        margin-top: auto;
+    }
+
+    footer a {
+        color: #a7c7e7;
+        text-decoration: none;
+    }
+    </style>
+</head>
+<body>
+     <!-- Navbar -->
+     <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" href="index.html"><img src="/img/JA.png" alt="JA Logo" style="width: 30px; margin-right: 10px;">Recursos JA</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="dinamicas.html">Dinámicas</a></li>
+                    <li class="nav-item"><a class="nav-link" href="dinamicas.html">Programas</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#"><img src="/img/acceso.png" alt="Iniciar Sesión" style="width: 30px;"></a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div id="board">
+        <div class="question">Categoría: <span id="category">Pregunta</span></div>
+        <div id="answers"></div>
+        <div id="inputArea">
+            <input type="text" id="answerInput" placeholder="Escribe tu respuesta aquí...">
+            <button class="btn btn-success" onclick="submitAnswer()">Adivinar</button>
+        </div>
+        <button class="btn btn-primary" onclick="prevQuestion()">Pregunta Anterior</button>
+        <button class="btn btn-primary" onclick="nextQuestion()">Siguiente Pregunta</button>
+        <div class="strikes" id="strikes">❌❌❌</div>
+        <div id="scoreBoard">Puntuación: <span id="score">0</span></div>
+        <button class="btn btn-danger" onclick="location.href='index.html'">Regresar al Inicio</button>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                "question": "Hijos de Adán y Eva",
+                "answers": [
+                    { "answer": "Cain", "points": 50 },
+                    { "answer": "Abel", "points": 30 },
+                    { "answer": "Set", "points": 15 }
+                ]
+            },
+            {
+                "question": "Profetas del Antiguo Testamento",
+                "answers": [
+                    { "answer": "Moises", "points": 40 },
+                    { "answer": "Elias", "points": 25 },
+                    { "answer": "Isaias", "points": 20 },
+                    { "answer": "Jeremias", "points": 10 },
+                    { "answer": "Ezequiel", "points": 5 }
+                ]
+            },
+            {
+                "question": "Plagas de Egipto",
+                "answers": [
+                    { "answer": "Rio en sangre", "points": 35 },
+                    { "answer": "Ranas", "points": 25 },
+                    { "answer": "Langostas", "points": 15 },
+                    { "answer": "Oscuridad", "points": 15 },
+                    { "answer": "Muerte de primogenitos", "points": 10 }
+                ]
+            },
+            {
+                "question": "Libros del Nuevo Testamento",
+                "answers": [
+                    { "answer": "Mateo", "points": 30 },
+                    { "answer": "Marcos", "points": 25 },
+                    { "answer": "Lucas", "points": 20 },
+                    { "answer": "Juan", "points": 15 },
+                    { "answer": "Hechos", "points": 10 }
+                ]
+            },
+            {
+                "question": "Frutas mencionadas en la Biblia",
+                "answers": [
+                    { "answer": "Uvas", "points": 40 },
+                    { "answer": "Higos", "points": 30 },
+                    { "answer": "Granadas", "points": 20 },
+                    { "answer": "Manzana", "points": 7 },
+                    { "answer": "Olivas", "points": 3 }
+                ]
+            },
+            {
+                "question": "Mandamientos de la Ley de Dios",
+                "answers": [
+                    { "answer": "No hutaras", "points": 25 },
+                    { "answer": "Honra a tu padre y a tu madre", "points": 25 },
+                    { "answer": "No matarás", "points": 20 },
+                    { "answer": "No Codiciaras", "points": 15 },
+               
+                ]
+            },
+            {
+                "question": "Actos que hizo Jesús",
+                "answers": [
+                    { "answer": "Caminar sobre el agua", "points": 30 },
+                    { "answer": "Multiplicar los panes y peces", "points": 25 },
+                    { "answer": "Sanar a los ciegos", "points": 20 },
+                    { "answer": "Resucitar a Lázaro", "points": 15 },
+                    { "answer": "Convertir agua en vino", "points": 10 }
+                ]
+            },
+            {
+                "question": "Ciudades mencionadas en la Biblia",
+                "answers": [
+                    { "answer": "Jerusalen", "points": 40 },
+                    { "answer": "Belen", "points": 30 },
+                    { "answer": "Nazaret", "points": 20 },
+                    { "answer": "Canaan", "points": 7 },
+                    { "answer": "Efeso", "points": 3 }
+                ]
+            },
+            {
+                "question": "Frutos del Espiritu",
+                "answers": [
+                    { "answer": "Amor", "points": 40 },
+                    { "answer": "Paz", "points": 25 },
+                    { "answer": "Bondad", "points": 20 },
+                    { "answer": "Paciencia", "points": 10 },
+                    { "answer": "Fe", "points": 5 }
+                ]
+            },
+            {
+                "question": "Parábolas de Jesús",
+                "answers": [
+                    { "answer": "El hijo pródigo", "points": 35 },
+                    { "answer": "El buen samaritano", "points": 30 },
+                    { "answer": "El sembrador", "points": 20 },
+                    { "answer": "La oveja perdida", "points": 10 },
+                    { "answer": "El mayordomo infiel", "points": 5 }
+                ]
+            },
+            {
+                "question": "Pioneros de la iglesia Adventista",
+                "answers": [
+                    { "answer": "Elena G. White", "points": 50 },
+                    { "answer": "Guillermo Miller", "points": 30 },
+                    { "answer": "Jaime White", "points": 10 },
+                    { "answer": "J.N Andrews", "points": 7 },
+                    { "answer": "Joseph Bates", "points": 3 }
+                ]
+            },
+            {
+                "question": "Reyes de Israel",
+                "answers": [
+                    { "answer": "David", "points": 40 },
+                    { "answer": "Salomon", "points": 30 },
+                    { "answer": "Saul", "points": 20 },
+                    { "answer": "Ezequias", "points": 7 },
+                    { "answer": "Acab", "points": 3 }
+                ]
+            },
+            {
+                "question": "Montañas en la Biblia",
+                "answers": [
+                    { "answer": "Sinai", "points": 40 },
+                    { "answer": "Monte de los Olivos", "points": 30 },
+                    { "answer": "Carmelo", "points": 20 },
+                    { "answer": "Ararat", "points": 7 },
+                    { "answer": "Moriah", "points": 3 }
+                ]
+            },
+            {
+                "question": "Ofrendas que se ofrecian a Dios",
+                "answers": [
+                    { "answer": "Ovejas", "points": 50 },
+                    { "answer": "Carneros", "points": 30 },
+                    { "answer": "Palominos", "points": 15 }
+                ]
+            },
+            {
+                "question": "Mujeres en la Biblia",
+                "answers": [
+                    { "answer": "Maria", "points": 30 },
+                    { "answer": "Eva", "points": 25 },
+                    { "answer": "Sara", "points": 20 },
+                    { "answer": "Ester", "points": 15 },
+                    { "answer": "Rut", "points": 10 }
+                ]
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let strikes = 0;
+
+        function normalizeString(str) {
+            return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
+        }
+
+        function loadQuestion() {
+            const questionData = questions[currentQuestionIndex];
+            document.querySelector(".question").textContent = questionData.question;
+
+            const answersDiv = document.getElementById("answers");
+            answersDiv.innerHTML = "";
+            questionData.answers.forEach((answer, index) => {
+                const answerRow = document.createElement("div");
+                answerRow.classList.add("answer-row", "hidden");
+                answerRow.innerHTML = `${index + 1}. <span class="answer">${answer.answer}</span> <span class="points">${answer.points}</span>`;
+                answersDiv.appendChild(answerRow);
+            });
+        }
+
+        function submitAnswer() {
+            const input = normalizeString(document.getElementById("answerInput").value.trim());
+            const questionData = questions[currentQuestionIndex];
+            const answerRows = document.querySelectorAll(".answer-row");
+            let correct = false;
+
+            questionData.answers.forEach((answer, index) => {
+                if (input === normalizeString(answer.answer)) {
+                    correct = true;
+                    score += answer.points;
+                    document.getElementById("score").textContent = score;
+                    answerRows[index].classList.remove("hidden");
+                }
+            });
+
+            if (!correct) {
+                strikes++;
+                document.getElementById("strikes").textContent = "❌".repeat(strikes);
+                if (strikes >= 3) {
+                    alert("¡Has perdido! Vamos a la siguiente pregunta.");
+                }
+            }
+
+            document.getElementById("answerInput").value = "";
+        }
+
+        function nextQuestion() {
+            strikes = 0;
+            document.getElementById("strikes").textContent = "❌❌❌";
+            currentQuestionIndex = (currentQuestionIndex + 1) % questions.length;
+            loadQuestion();
+        }
+
+        function prevQuestion() {
+            strikes = 0;
+            document.getElementById("strikes").textContent = "❌❌❌";
+            currentQuestionIndex = (currentQuestionIndex - 1 + questions.length) % questions.length;
+            loadQuestion();
+        }
+
+        loadQuestion();
+    </script>
+
+
+<footer>
+    <div class="container">
+        <p>&copy; 2025 JA Resources powered by CeAcatl Software | <a href="/politica.html">Política de Privacidad</a></p>
+    </div>
+</footer>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Smooth scrolling for navbar links
+    document.querySelectorAll('.nav-link').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            const targetId = this.getAttribute('href').slice(1);
+            const targetElement = document.getElementById(targetId);
+            if (targetElement) {
+                e.preventDefault();
+                window.scrollTo({
+                    top: targetElement.offsetTop - 70,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+</script>
+</body>
+</html>
