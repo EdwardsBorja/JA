@@ -27,7 +27,13 @@
 <body>
     <div class="container text-center mt-5">
         <h1>Juego del Ahorcado</h1>
-        <button class="btn btn-primary" id="selectCategory">Elegir Categoría</button>
+        <div id="categorySelection">
+            <h2>Elige una categoría</h2>
+            <button class="btn btn-primary" onclick="selectCategory('Personajes')">Personajes</button>
+            <button class="btn btn-secondary" onclick="selectCategory('Lugares')">Lugares</button>
+            <button class="btn btn-success" onclick="selectCategory('Versículos')">Versículos</button>
+            <button class="btn btn-warning" onclick="selectCategory('Himnos Adventistas')">Himnos Adventistas</button>
+        </div>
         <div id="gameArea" class="mt-4 d-none">
             <div class="hangman-drawing" id="hangmanDrawing">Inicia el juego para comenzar...</div>
             <div id="wordDisplay" class="word-display"></div>
@@ -52,19 +58,9 @@
         let guessedLetters = new Set();
         let errors = 0;
 
-        document.getElementById("selectCategory").addEventListener("click", showCategorySelection);
-        document.getElementById("checkLetter").addEventListener("click", checkLetter);
-        document.getElementById("revealAnswer").addEventListener("click", revealAnswer);
-        document.getElementById("chooseAnotherCategory").addEventListener("click", resetGame);
-
-        function showCategorySelection() {
-            const category = prompt("Elige una categoría: Personajes, Lugares, Versículos, Himnos Adventistas");
-            if (categories[category]) {
-                selectedCategory = category;
-                startGame();
-            } else {
-                alert("Categoría no válida. Inténtalo nuevamente.");
-            }
+        function selectCategory(category) {
+            selectedCategory = category;
+            startGame();
         }
 
         function startGame() {
@@ -74,6 +70,7 @@
             document.getElementById("hangmanDrawing").innerText = "";
             document.getElementById("wordDisplay").innerHTML = word.replace(/./g, "_ ");
             document.getElementById("gameArea").classList.remove("d-none");
+            document.getElementById("categorySelection").classList.add("d-none");
             document.getElementById("questionNumbers").innerHTML = generateQuestionNumbers();
         }
 
@@ -84,6 +81,10 @@
             }
             return numbersHtml;
         }
+
+        document.getElementById("checkLetter").addEventListener("click", checkLetter);
+        document.getElementById("revealAnswer").addEventListener("click", revealAnswer);
+        document.getElementById("chooseAnotherCategory").addEventListener("click", resetGame);
 
         function checkLetter() {
             const input = document.getElementById("inputLetter").value.toUpperCase();
@@ -129,6 +130,7 @@
 
         function resetGame() {
             document.getElementById("gameArea").classList.add("d-none");
+            document.getElementById("categorySelection").classList.remove("d-none");
             document.getElementById("hangmanDrawing").innerText = "";
             document.getElementById("wordDisplay").innerHTML = "";
         }
