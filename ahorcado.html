@@ -18,6 +18,7 @@
             font-size: 1.5rem;
             letter-spacing: 1rem;
             margin-bottom: 20px;
+            white-space: pre-wrap;
         }
         .letters {
             font-size: 1.2rem;
@@ -70,7 +71,7 @@
             guessedLetters.clear();
             errors = 0;
             document.getElementById("hangmanDrawing").innerText = "";
-            document.getElementById("wordDisplay").innerHTML = word.replace(/./g, "_ ");
+            document.getElementById("wordDisplay").innerHTML = word.replace(/\S/g, "_ ").replace(/\s/g, "   ");
             document.getElementById("gameArea").classList.remove("d-none");
             document.getElementById("categorySelection").classList.add("d-none");
             document.getElementById("questionNumbers").innerHTML = generateQuestionNumbers();
@@ -102,7 +103,7 @@
             if (word.includes(input)) {
                 let displayWord = "";
                 for (const letter of word) {
-                    displayWord += guessedLetters.has(letter) ? letter + " " : "_ ";
+                    displayWord += guessedLetters.has(letter) ? letter + " " : (letter === " " ? "   " : "_ ");
                 }
                 document.getElementById("wordDisplay").innerHTML = displayWord;
 
